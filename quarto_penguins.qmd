@@ -1,0 +1,73 @@
+---
+title: "penguin_investigations"
+author: "jgh"
+format: html
+editor: visual
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+1 + 1
+```
+
+You can add options to executable code like this
+
+```{r}
+#| echo: false
+2 * 2
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
+
+Let's look at some penguin morphology courtesy of Palmer:
+
+```{r}
+ #| echo: false
+library(palmerpenguins)
+library(tidyverse)
+library(magrittr)
+
+head(penguins)
+```
+
+Let's look at some of the differences in body size by species, shall we?
+
+```{r}
+penguins %>% group_by(species) %>%
+	summarise(n = n(), mass = mean(body_mass_g, na.rm = T), se = sd(body_mass_g, na.rm = T)/sqrt(n))
+```
+
+It looks like Adelie and Chinstrap are roughly the same size, but Gentoo are substantially larger. Is that a function of skeletal size or are Gentoo just chunkier? Let's see how body mass is related to skeletal morphometrics:
+
+```{r}
+#| echo: false
+
+library(viridis)
+
+ggplot(penguins, aes(x = flipper_length_mm/10, y = body_mass_g/1000, colour = species)) +
+	geom_point() +
+	geom_smooth(method = 'lm') +
+	scale_colour_viridis(option = "D", begin = 0.9, end = 0.2, discrete = TRUE) +
+	xlab("Flipper length (cm)") +
+	ylab("Body mass (kg)") +
+	theme_light()
+
+```
+
+The Gentoo are larger in terms of limb size as well, and maybe also have a steeper slope of this relationship? Hard to know for sure...
+
+```{r}
+#| echo:false
+#| 
+summary(lm(body_mass_g ~ species*flipper_length_mm, data = penguins))
+```
+
+The interaction is significant: Adelie and Chinstrap both increase in body size along with flipper size, but for Gentoo, this slope is steeper (approx. 66% more g of body mass added per mm of flipper length). neat!
+
