@@ -1,0 +1,14 @@
+project:
+  type: website
+  output-dir: docs
+  execute-dir: project
+
+website:
+  title: "penguins, quarto-style"
+
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
